@@ -1,0 +1,19 @@
+version: '3'
+
+# 未完成です 一番最後の drush siが動かない
+tasks:
+  drupal_install:
+    desc: "Run drush site:install with predefined database settings"
+    vars:
+      DB_HOST: mysql
+      DB_NAME: drupal
+      DB_USER: drupal
+      DB_PORT: 3306
+      DB_PASSWORD: drupal123
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: admin123
+    cmds:
+      - docker compose up -d
+      - docker exec -it php composer create-project drupal/recommended-project:10.3.1 /var/www/html/my-drupal
+      - docker exec -it php composer require drush/drush -d /var/www/html/my-drupal
+      - docker exec -it --workdir=/var/www/html/my-drupal php vendor/bin/drush si --db-url=mysql://{{.DB_USER}}:{{.DB_PASSWORD}}@{{.DB_HOST}}{{.DB_PORT}}/{{.DB_NAME}} --yes
